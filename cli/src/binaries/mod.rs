@@ -47,8 +47,12 @@ pub fn prisma_cli_name() -> String {
 }
 
 pub fn global_cache_dir() -> PathBuf {
-    let base_dirs = BaseDirs::new().unwrap();
-    let cache_dir = base_dirs.cache_dir();
+    let cache_dir = if let Some(dir) = std::env::var_os("PRISMA_GLOBAL_CACHE_DIR") {
+        PathBuf::from(dir)
+    } else {
+        let base_dirs = BaseDirs::new().unwrap();
+        base_dirs.cache_dir().to_path_buf()
+    };
 
     cache_dir
         .join(BASE_DIR_NAME)
